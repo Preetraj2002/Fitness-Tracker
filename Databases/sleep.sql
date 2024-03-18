@@ -160,5 +160,6 @@ INSERT INTO Sleep (UserID, Timestamp, TotalDuration, Deep, Light, Rem) VALUES (5
 INSERT INTO Sleep (UserID, Timestamp, TotalDuration, Deep, Light, Rem) VALUES (5, '2024-03-30 23:00:00', 10, 2, 3, 5);
 
 UPDATE Sleep
-SET SleepQualityIndex = ((Deep / TotalDuration) * 2) + ((Light / TotalDuration) * 2) + ((Rem / TotalDuration) * 2);
+SET SleepQualityIndex = ((Deep / TotalDuration) * 0.25) + ((Light / TotalDuration) * 0.5) + ((Rem / TotalDuration) * 0.25);
+
 
