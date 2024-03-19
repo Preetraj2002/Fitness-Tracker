@@ -190,3 +190,23 @@ SELECT 182, 'Chips', 200 FROM DUAL UNION ALL
 SELECT 183, 'Cakes', 300 FROM DUAL UNION ALL
 SELECT 184, 'Chocolates', 400 FROM DUAL UNION ALL
 SELECT 185, 'Sweets', 250 FROM DUAL;
+
+CREATE OR REPLACE TRIGGER calculate_calories
+BEFORE INSERT ON FOODLOG
+FOR EACH ROW
+DECLARE
+    food_cal DECIMAL(10, 2);
+BEGIN
+    SELECT "CAL/100" INTO food_cal
+    FROM FoodCalChart
+    WHERE FOODNAME = :NEW.Food;
+
+    :NEW.Calories := (:NEW.Quantity / 100) * food_cal;
+END;
+/
+INSERT INTO FOODLOG (UserID, Timestamp, FoodCategory, Food, Quantity)
+SELECT 1, '2024-04-01 9:00 AM', 'Sugars', 'Sugarcane, juice', 42 FROM DUAL ;
+
+SELECT *
+FROM FOODLOG
+WHERE Timestamp = '2024-04-01 9:00 AM';
