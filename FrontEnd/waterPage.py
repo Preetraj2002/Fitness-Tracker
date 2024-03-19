@@ -13,5 +13,4 @@ def water_intake_tracker():
 
     # Submit button
     if st.button("Submit"):
-        timestamp = datetime.combine(selected_date, selected_time)
-        st.success(f"Logged Water Intake: {quantity} ml at {timestamp}")
+        st.success(f"Logged Water Intake: {quantity} ml at {selected_date} on {selected_time}")
