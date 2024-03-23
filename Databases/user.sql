@@ -45,4 +45,11 @@ INSERT INTO "user" (id, name, sex, age, weight_kg, height_cm)
 VALUES
 (5, 'Aarti Roy', 'Female', 20, 60, 170);
 
-SELECT id from "user"  WHERE username = 'psingh'  AND password = 'pqrs';
+SELECT id from "user"  WHERE username = 'psingh'  AND password = 'pqr';
+
+UPDATE "user" SET username = 'psingh', password = 'pqr' WHERE id = 1;
+UPDATE "user" SET username = 'rohan123', password = '1234' WHERE id = 2;
+UPDATE "user" SET username = 'sdesai', password = '5678' WHERE id = 3;
+UPDATE "user" SET username = 'vinay123', password = 'abcd' WHERE id = 4;
+UPDATE "user" SET username = 'aroy123', password = 'aroy' WHERE id = 5;
+
