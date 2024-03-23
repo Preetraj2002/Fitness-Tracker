@@ -1,5 +1,7 @@
 SET SERVEROUTPUT ON SQL;
 
+DROP TABLE water_intake;
+
 CREATE TABLE water_intake (
     user_id NUMBER,
     time_stamp TIMESTAMP,

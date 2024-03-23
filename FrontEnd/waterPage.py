@@ -1,5 +1,5 @@
 import streamlit as st
-def water_intake_tracker():
+def water_intake_tracker(user_id, conn):
     st.title("Water Intake Tracker")
 
     # Date selection

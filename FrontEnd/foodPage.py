@@ -223,7 +223,7 @@ def calculate_calories(food, quantity):
     calories = (quantity / 100) * cal_per_100g
     return calories
 
-def food_calorie_tracker():
+def food_calorie_tracker(user_id, conn):
 # Streamlit app layout
     st.title("Food Calorie Tracker")
 

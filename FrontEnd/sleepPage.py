@@ -1,8 +1,14 @@
 import streamlit as st
 
-def calculate_sleep_index(total_duration, deep_sleep_duration, light_sleep_duration, rem_sleep_duration):
+
+def calculate_sleep_index(
+    total_duration, deep_sleep_duration, light_sleep_duration, rem_sleep_duration
+):
     # Calculate Sleep Efficiency
-    sleep_efficiency = ((deep_sleep_duration + light_sleep_duration + rem_sleep_duration) / total_duration) * 100
+    sleep_efficiency = (
+        (deep_sleep_duration + light_sleep_duration + rem_sleep_duration)
+        / total_duration
+    ) * 100
 
     # Calculate Sleep Index
     if sleep_efficiency < 85:
@@ -16,7 +22,8 @@ def calculate_sleep_index(total_duration, deep_sleep_duration, light_sleep_durat
 
     return sleep_index
 
-def sleep_quality_tracker():
+
+def sleep_quality_tracker( user_id, conn):
     st.title("Sleep Quality Tracker")
 
     # Timestamp input
@@ -37,13 +44,20 @@ def sleep_quality_tracker():
     # Submit button
     if st.button("Submit"):
         # Calculate sleep index
-        sleep_index = calculate_sleep_index(total_duration, deep_sleep_duration, light_sleep_duration, rem_sleep_duration)
-        
+        sleep_index = calculate_sleep_index(
+            total_duration,
+            deep_sleep_duration,
+            light_sleep_duration,
+            rem_sleep_duration,
+        )
+
         # Display sleep index
         st.success(f"Sleep Index: {sleep_index}")
 
+
 def main():
     sleep_data_input()
+
 
 if __name__ == "__main__":
     main()

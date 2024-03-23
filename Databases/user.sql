@@ -1,3 +1,5 @@
+DROP TABLE "user";
+
 CREATE TABLE "user" (
     id NUMBER PRIMARY KEY,
     name VARCHAR2(255),
@@ -7,6 +9,11 @@ CREATE TABLE "user" (
     height_cm NUMBER,
     bmi NUMBER
 );
+
+ALTER TABLE "user"
+ADD username VARCHAR(255);
+ALTER TABLE "user"
+ADD password VARCHAR(255);
 
 CREATE OR REPLACE TRIGGER calculate_bmi
 BEFORE INSERT OR UPDATE OF weight_kg, height_cm ON "user"
@@ -37,3 +44,5 @@ VALUES
 INSERT INTO "user" (id, name, sex, age, weight_kg, height_cm)
 VALUES
 (5, 'Aarti Roy', 'Female', 20, 60, 170);
+
+SELECT id from "user"  WHERE username = 'psingh'  AND password = 'pqrs';
