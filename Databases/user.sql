@@ -53,3 +53,21 @@ UPDATE "user" SET username = 'sdesai', password = '5678' WHERE id = 3;
 UPDATE "user" SET username = 'vinay123', password = 'abcd' WHERE id = 4;
 UPDATE "user" SET username = 'aroy123', password = 'aroy' WHERE id = 5;
 
+CREATE SEQUENCE user_id_seq
+  START WITH 6
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+
+CREATE OR REPLACE TRIGGER user_id_trigger
+BEFORE INSERT ON "user"
+FOR EACH ROW
+BEGIN
+  SELECT user_id_seq.NEXTVAL
+  INTO :new.id
+  FROM dual;
+END;
+/
+
+
+
