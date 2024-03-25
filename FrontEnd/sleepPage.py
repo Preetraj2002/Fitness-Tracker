@@ -114,7 +114,6 @@ def sleep_quality_tracker(user_id, conn):
 
     # Combine date and time into a single datetime object
     time_stamp = datetime.combine(selected_date, selected_time)
-    st.write(time_stamp)
 
     # Total duration input
     total_duration = st.number_input("Total Sleep Duration (hours)")
