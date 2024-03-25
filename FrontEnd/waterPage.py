@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
-
+from PIL import Image
 # def water_intake_tracker(user_id, conn):
 #     st.title("Water Intake Tracker")
 
@@ -29,6 +29,8 @@ def insert_water_intake(conn, user_id, time_stamp, quantity_ml):
 
 
 def water_intake_tracker(user_id, conn):
+    im=Image.open('Asset/water.png') 
+    st.image(im, width=300)
     st.title("Water Intake Tracker")
 
     # Date selection
