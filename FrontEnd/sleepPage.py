@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime
-
+from PIL import Image
 # def calculate_sleep_index(
 #     total_duration, deep_sleep_duration, light_sleep_duration, rem_sleep_duration
 # ):
@@ -95,7 +95,16 @@ def calculate_sleep_quality_index(
 
 
 def sleep_quality_tracker(user_id, conn):
-    st.title("Sleep Quality Tracker")
+    im=Image.open('Asset/sleep.png') 
+    # Streamlit app layout
+   # Assuming 'im' is your image variable
+    col1, col2 = st.columns([1, 5])
+    with col1:
+        # Display the grayscale image
+        st.image(im, width=100)
+
+    with col2:
+        st.title("Sleep Quality Tracker")
 
     # Date selection
     selected_date = st.date_input("Select Date")
