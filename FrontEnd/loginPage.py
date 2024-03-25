@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def connect_to_database():
-    connStr = "system/prakriti1@localhost:1521/xepdb1"
+    connStr = "system/chand123@localhost:1521/xepdb1"
     conn = cx_Oracle.connect(connStr)
     return conn
 
@@ -37,9 +37,7 @@ def user_login():
     if st.button("Login", type="primary"):
         user_id = authenticate_user(username, password)
         if user_id:
-            st.success("Login successful")
-            st.write(f"Welcome, {username}!")
-            st.write("Select a page from the sidebar to continue.")
+            st.title(f"Welcome, {username}!")
             # Display navigation bar
         else:
             st.error("Invalid username or password")
