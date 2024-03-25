@@ -209,24 +209,32 @@ hashmap = {
 }
 
 
-def calculate_calories(food, quantity):
-    # Retrieve CAL/100 from FoodCalChart or some other source
-    # Calculate calories using quantity and CAL/100
-    # For demonstration, let's assume a fixed value for CAL/100
-    cal_per_100g = 100.0  # Placeholder value, replace this with actual lookup
-    calories = (quantity / 100) * cal_per_100g
-    return calories
+def insert_food_intake(conn, user_id, time_stamp, food_category, food, quantity):
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO FOODLOG (UserID, Timestamp, FoodCategory, Food, Quantity) VALUES (:user_id, :time_stamp, :foodCategory, :food, :quantity)",
+        {
+            "user_id": user_id,
+            "time_stamp": time_stamp,
+            "foodCategory": food_category,
+            "food": food,
+            "quantity": quantity,
+        },
+    )
+    conn.commit()
+    cur.close()
 
 
 def food_calorie_tracker(user_id, conn):
+
     # Streamlit app layout
     st.title("Food Calorie Tracker")
 
     # Date input
-    date = st.date_input("Select Date")
+    selected_date = st.date_input("Select Date")
 
     # Time slot selection
-    time_slot = st.selectbox(
+    selected_time = st.selectbox(
         "Select Time Slot", ["9:00 AM", "1:00 PM", "5:00 PM", "9:00 PM"]
     )
 
@@ -239,12 +247,16 @@ def food_calorie_tracker(user_id, conn):
     # Quantity input
     quantity = st.number_input("Enter Quantity (in g/ml)", min_value=1)
 
-    # Submit button
-    if st.button("Submit", type="primary"):
-        # Calculate calories
-        calories = calculate_calories(food, quantity)
+    if st.button("Submit"):
+        # Insert food intake into database
+        time_stamp = f"{selected_date} {selected_time}"
+        insert_food_intake(conn, user_id, time_stamp, category, food, quantity)
 
-        # Display result
-        st.write(f"Food: {food}")
-        st.write(f"Quantity: {quantity} g/ml")
-        st.write(f"Calories: {calories}")
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT Calories FROM FOODLOG WHERE UserID = :user_id AND Timestamp = :time_stamp",
+            {"user_id": user_id, "time_stamp": time_stamp},
+        )
+        calories = cur.fetchall()  # Fetch the calorie value
+        st.write(f"{calories} consumed")
+        cur.close()
