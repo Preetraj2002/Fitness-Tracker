@@ -126,7 +126,7 @@ def sleep_quality_tracker(user_id, conn):
         )
 
     # Submit button
-    if st.button("Submit"):
+    if st.button("Submit", type="primary"):
         insert_sleep_data(
             conn,
             user_id,

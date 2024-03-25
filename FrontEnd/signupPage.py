@@ -22,7 +22,7 @@ def user_signup():
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     userid = None
-    if st.button("Sign Up"):
+    if st.button("Sign Up", type="primary"):
         cur.execute(
             'INSERT INTO "user" (name, sex, age, weight_kg, height_cm, username, password) VALUES (:name, :sex, :age, :weight_kg, :height_cm, :username, :password)',
             {

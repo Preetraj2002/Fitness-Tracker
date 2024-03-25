@@ -17,7 +17,7 @@ hashmap = {
         "Bajra",
         "Jowar",
         "Quinoa",
-        "Amaranth seed, Black"
+        "Amaranth seed, Black",
     ],
     "GrainLegumes": [
         "Bengal gram, dal",
@@ -33,9 +33,9 @@ hashmap = {
         "Rajma, red",
         "Red gram, dal",
         "Red gram, whole",
-        "Soya bean, brown"
+        "Soya bean, brown",
     ],
-     "GreenLeafyVegetables": [
+    "GreenLeafyVegetables": [
         "Amaranth leaves",
         "Beet greens",
         "Brussels sprouts",
@@ -49,9 +49,9 @@ hashmap = {
         "Mustard leaves",
         "Parsley",
         "Radish leaves",
-        "Spinach"
+        "Spinach",
     ],
-     "OtherVegetables": [
+    "OtherVegetables": [
         "Ash gourd",
         "Bamboo shoot, tender",
         "Bitter gourd",
@@ -75,7 +75,7 @@ hashmap = {
         "Ridge gourd",
         "Snake gourd",
         "Tomato",
-        "Zucchini, green"
+        "Zucchini, green",
     ],
     "RootVegetables": [
         "Beetroot",
@@ -84,7 +84,7 @@ hashmap = {
         "Radish,white",
         "Sweet potato,brown",
         "Tapioca",
-        "Yam"
+        "Yam",
     ],
     "Fruits": [
         "Apple",
@@ -115,9 +115,9 @@ hashmap = {
         "Sapota",
         "Strawberry",
         "Watermelon",
-        "Wood apple"
+        "Wood apple",
     ],
-     "CondimentsAndSpices": [
+    "CondimentsAndSpices": [
         "Green chillies",
         "Coriander seeds",
         "Curry leaves",
@@ -137,7 +137,7 @@ hashmap = {
         "Anise seeds",
         "Pepper, black",
         "Poppy seeds",
-        "Turmeric powder"
+        "Turmeric powder",
     ],
     "NutsAndOilSeeds": [
         "Almond",
@@ -153,19 +153,16 @@ hashmap = {
         "Sunflower seeds",
         "Walnut",
         "Flax seeds",
-        "Chia seeds"
+        "Chia seeds",
     ],
-    "Sugars": [
-        "Jaggery cane",
-        "Sugarcane, juice"
-    ],
+    "Sugars": ["Jaggery cane", "Sugarcane, juice"],
     "MilkAndMilkProducts": [
         "Milk, whole, buffalo",
         "Milk, whole, cow",
         "Paneer",
         "Khoa",
         "Soy milk",
-        "Tofu"
+        "Tofu",
     ],
     "EggPoultryAndAnimalMeat": [
         "Egg, whole, raw",
@@ -180,7 +177,7 @@ hashmap = {
         "Sheep, chops",
         "Beef, chops",
         "Pork, shoulder",
-        "Pork, chops"
+        "Pork, chops",
     ],
     "FishAndSeafood": [
         "Cat fish",
@@ -198,22 +195,19 @@ hashmap = {
         "Oyster",
         "Tiger prawns",
         "Clam",
-        "Squid"
+        "Squid",
     ],
-    "FatsAndOils": [
-        "Ghee",
-        "Butter",
-        "Oil",
-        "Cheese"
-    ],
+    "FatsAndOils": ["Ghee", "Butter", "Oil", "Cheese"],
     "MiscellaneousFoods": [
         "Coconut water",
         "Cold Drink",
         "Chips",
         "Cakes",
         "Chocolates",
-        "Sweets"
-    ]}
+        "Sweets",
+    ],
+}
+
 
 def calculate_calories(food, quantity):
     # Retrieve CAL/100 from FoodCalChart or some other source
@@ -223,15 +217,18 @@ def calculate_calories(food, quantity):
     calories = (quantity / 100) * cal_per_100g
     return calories
 
+
 def food_calorie_tracker(user_id, conn):
-# Streamlit app layout
+    # Streamlit app layout
     st.title("Food Calorie Tracker")
 
     # Date input
     date = st.date_input("Select Date")
 
     # Time slot selection
-    time_slot = st.selectbox("Select Time Slot", ['9:00 AM', '1:00 PM', '5:00 PM', '9:00 PM'])
+    time_slot = st.selectbox(
+        "Select Time Slot", ["9:00 AM", "1:00 PM", "5:00 PM", "9:00 PM"]
+    )
 
     # Key selection
     category = st.selectbox("Select Category", list(hashmap.keys()))
@@ -243,10 +240,10 @@ def food_calorie_tracker(user_id, conn):
     quantity = st.number_input("Enter Quantity (in g/ml)", min_value=1)
 
     # Submit button
-    if st.button("Submit"):
+    if st.button("Submit", type="primary"):
         # Calculate calories
         calories = calculate_calories(food, quantity)
-        
+
         # Display result
         st.write(f"Food: {food}")
         st.write(f"Quantity: {quantity} g/ml")
