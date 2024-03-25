@@ -1,5 +1,5 @@
 import streamlit as st
-
+from PIL import Image
 # Sample user data (replace with actual user data)
 # user_data = {
 #     "username": "JohnDoe",
@@ -52,6 +52,17 @@ def edit_profile(user_id, conn):
 
 
 def show_profile(user_id, conn):
+    
+    im=Image.open('Asset/runner.png') 
+    # Streamlit app layout
+   # Assuming 'im' is your image variable
+    col1, col2 = st.columns([1, 5])
+    with col1:
+        # Display the grayscale image
+        st.image(im, width=100)
+
+    with col2:
+        st.title("Profile")
     cur = conn.cursor()
     cur.execute(
         'SELECT name, sex, age, weight_kg, height_cm, bmi FROM "user" WHERE id = :user_id',
