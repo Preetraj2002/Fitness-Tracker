@@ -238,8 +238,6 @@ def food_calorie_tracker(user_id, conn):
     with col2:
         st.title("Food Calorie Tracker")
     
-    # Streamlit app layout
-    st.title("Food Calorie Tracker")
 
     # Date input
     selected_date = st.date_input("Select Date")
