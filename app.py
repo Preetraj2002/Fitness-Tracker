@@ -16,7 +16,7 @@ im=Image.open('Asset/logo.png')
 def main():
     conn = connect_to_database()
     cur = conn.cursor()
-    st.sidebar.title("Navigation")
+    st.sidebar.title("Fitness-Tracker").image(im,width=300)
     selection = st.sidebar.radio(
         "Go to",
         [
