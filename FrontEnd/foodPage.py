@@ -1,5 +1,5 @@
 import streamlit as st
-
+from PIL import Image
 hashmap = {
     "CerealsAndMillets": [
         "Rice (Brown)",
@@ -226,7 +226,18 @@ def insert_food_intake(conn, user_id, time_stamp, food_category, food, quantity)
 
 
 def food_calorie_tracker(user_id, conn):
+  
+    im=Image.open('Asset/food.png') 
+    # Streamlit app layout
+   # Assuming 'im' is your image variable
+    col1, col2 = st.columns([1, 5])
+    with col1:
+        # Display the grayscale image
+        st.image(im, width=100)
 
+    with col2:
+        st.title("Food Calorie Tracker")
+    
     # Streamlit app layout
     st.title("Food Calorie Tracker")
 
