@@ -70,14 +70,17 @@ def show_profile(user_id, conn):
     )
     user_data = cur.fetchone()
 
-    edit_mode = st.checkbox("Edit Profile")
+    edit_mode = st.button("Edit Profile")
 
     if edit_mode:
         edit_profile(user_id, conn)
     else:
-        st.write(f"Name: {user_data[0]}")
-        st.write(f"Sex: {user_data[1]}")
-        st.write(f"Age: {user_data[2]}")
-        st.write(f"Weight (kg): {user_data[3]}")
-        st.write(f"Height (cm): {user_data[4]}")
-        st.write(f"BMI: {user_data[5]}")
+        info_style = "font-size: 18px; padding: 10px; background-color: black; border-radius: 5px;"
+
+        st.write(f"<p style='{info_style}'><b>Name:</b> {user_data[0]}</p>", unsafe_allow_html=True)
+        st.write(f"<p style='{info_style}'><b>Sex:</b> {user_data[1]}</p>", unsafe_allow_html=True)
+        st.write(f"<p style='{info_style}'><b>Age:</b> {user_data[2]}</p>", unsafe_allow_html=True)
+        st.write(f"<p style='{info_style}'><b>Weight (kg):</b> {user_data[3]}</p>", unsafe_allow_html=True)
+        st.write(f"<p style='{info_style}'><b>Height (cm):</b> {user_data[4]}</p>", unsafe_allow_html=True)
+        st.write(f"<p style='{info_style}'><b>BMI:</b> {user_data[5]}</p>", unsafe_allow_html=True)
+
