@@ -75,7 +75,6 @@ def show_profile(user_id, conn):
     if edit_mode:
         edit_profile(user_id, conn)
     else:
-        st.title("Profile")
         st.write(f"Name: {user_data[0]}")
         st.write(f"Sex: {user_data[1]}")
         st.write(f"Age: {user_data[2]}")
