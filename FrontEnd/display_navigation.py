@@ -22,9 +22,9 @@ def navigation(user_id, conn):
             app = option_menu(
                 menu_title='Fitness-Tracker',
                 options=['Profile','Food','Sleep','Water','Exercise','Get Motivation','Logout'],
-                icons=['person-fill','cake-fill','moon-fill','water',"None"'sun-fill','info-circle-fill'],
+                icons=['person-fill','cake-fill','moon-fill','water','play-fill','sun-fill','info-circle-fill'],
                 menu_icon='chat-text-fill',
-                default_index=4,
+                default_index=5,
                 styles={
                     "container": {"padding": "5!important","background-color":'#080808',"color":"#e4e0e0"},# pkc=#eaf8db
         "icon": {"color": "#1f211c", "font-size": "23px"}, 
