@@ -32,7 +32,7 @@ def user_login():
     cur = conn.cursor()
     st.title("Login")
     username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    password = st.text_input("Password")
     user_id = None
     if st.button("Login", type="primary"):
         user_id = authenticate_user(username, password)
