@@ -37,7 +37,13 @@ def user_login():
     if st.button("Login"):
         user_id = authenticate_user(username, password)
         if user_id:
-            st.title(f"Welcome, {username}!")
+            cur = conn.cursor()
+            cur.execute(
+        'SELECT name, sex, age, weight_kg, height_cm, bmi FROM "user" WHERE id = :user_id',
+        {"user_id": user_id},
+            )
+            userData=cur.fetchone()
+            st.title(f"Welcome, {userData[0]}!")
             # Display navigation bar
         else:
             st.error("Invalid username or password")
