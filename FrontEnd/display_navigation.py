@@ -7,12 +7,8 @@ from FrontEnd.profilePage import show_profile
 from FrontEnd.waterPage import water_intake_tracker
 from FrontEnd.loginPage import user_login
 from FrontEnd.motivation import show_motivational_quote
+from FrontEnd.exercisePage import exercise_tracker
 from streamlit_option_menu import option_menu
-
-def connect_to_database1():
-    connStr = "system/chand123@localhost:1521/xepdb1"
-    conn = cx_Oracle.connect(connStr)
-    return conn
 
 
 from PIL import Image
@@ -25,8 +21,8 @@ def navigation(user_id, conn):
         with st.sidebar:        
             app = option_menu(
                 menu_title='Fitness-Tracker',
-                options=['Profile','Food','Sleep','Water','Get Motivation','Logout'],
-                icons=['person-fill','cake-fill','moon-fill','water','sun-fill','info-circle-fill'],
+                options=['Profile','Food','Sleep','Water','Exercise','Get Motivation','Logout'],
+                icons=['person-fill','cake-fill','moon-fill','water',"None"'sun-fill','info-circle-fill'],
                 menu_icon='chat-text-fill',
                 default_index=4,
                 styles={
@@ -46,6 +42,8 @@ def navigation(user_id, conn):
             water_intake_tracker(user_id, conn)
         if app == "Profile":
             show_profile(user_id, conn)  
+        if app == "Exercise":
+            exercise_tracker(user_id, conn)
         if app == "Get Motivation":
             show_motivational_quote()
         if app == 'Logout':
