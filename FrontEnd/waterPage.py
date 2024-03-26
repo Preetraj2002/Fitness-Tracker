@@ -46,7 +46,7 @@ def water_intake_tracker(user_id, conn):
     quantity = st.number_input("Enter Quantity (in ml)", min_value=0)
 
     # Submit button
-    if st.button("Submit", type="primary"):
+    if st.button("Submit"):
         insert_water_intake(conn, user_id, time_stamp, quantity)
         st.success(
             f"Logged Water Intake: {quantity} ml at {selected_date} on {selected_time}"
