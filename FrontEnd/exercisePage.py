@@ -1,6 +1,7 @@
 import streamlit as st
 import datetime
 import pandas as pd
+from PIL import Image
 
 exercise_list = [
     "Yoga",
@@ -53,8 +54,14 @@ def add_exercise(conn, user_id, time_stamp,exercise,duration,cals):
 
 def exercise_tracker(user_id, conn):
 # Streamlit app layout
-    st.title("Exercise Tracker 🏃")
 
+    im=Image.open('Asset/Exercise.png') 
+    col1, col2 = st.columns([1, 9])
+    with col1:
+        st.image(im, width=200)
+    with col2:
+        st.title("Exercise Tracker")
+   
     # Date input
     date = st.date_input("Select Date")
 
