@@ -53,7 +53,7 @@ def show_profile(user_id, conn):
     user_data = cur.fetchone()
     col1, col2 = st.columns([1, 1])
     with col1:
-        if user_data[1]=='male':
+        if user_data[1]=='Male':
                 st.image('Asset/male.png', width=300)
         else:
                 st.image('Asset/female.png', width=300)
