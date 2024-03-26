@@ -34,7 +34,7 @@ def user_login():
     username = st.text_input("Username")
     password = st.text_input("Password")
     user_id = None
-    if st.button("Login", type="primary"):
+    if st.button("Login"):
         user_id = authenticate_user(username, password)
         if user_id:
             st.title(f"Welcome, {username}!")
