@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def connect_to_database():
-    connStr = "system/chand123@localhost:1521/xepdb1"
+    connStr = "system/12345678@localhost:1521/xepdb1"
     conn = cx_Oracle.connect(connStr)
     return conn
 

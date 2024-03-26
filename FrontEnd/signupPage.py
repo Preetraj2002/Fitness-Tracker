@@ -5,7 +5,7 @@ from FrontEnd.loginPage import authenticate_user
 
 
 def connect_to_database():
-    connStr = "system/prakriti1@localhost:1521/xepdb1"
+    connStr = "system/12345678@localhost:1521/xepdb1"
     conn = cx_Oracle.connect(connStr)
     return conn
 

@@ -7,7 +7,7 @@ from FrontEnd.signupPage import user_signup
 from PIL import Image
 
 def connect_to_database():
-    connStr = "system/prakriti1@localhost:1521/xepdb1"
+    connStr = "system/12345678@localhost:1521/xepdb1"
     conn = cx_Oracle.connect(connStr)
     return conn
 
@@ -46,5 +46,5 @@ def main():
 
 
 if __name__ == "__main__":
-     st.set_page_config(page_title="Fitness-Tracker-App", page_icon=im)
+    st.set_page_config(page_title="Fitness-Tracker-App", page_icon=im)
     main()
