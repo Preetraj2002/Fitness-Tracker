@@ -9,7 +9,23 @@ CREATE TABLE Sleep (
     SleepQualityIndex DECIMAL(10, 2) -- Sleep quality index
 );
 
-ALTER TABLE Sleep MODIFY Timestamp ;
+ALTER TABLE Sleep MODIFY time_stamp TIMESTAMP;
+
+CREATE OR REPLACE TRIGGER calculate_sleep_index_trigger
+BEFORE INSERT OR UPDATE ON Sleep
+FOR EACH ROW
+BEGIN
+    -- Check if TotalDuration is not zero to avoid division by zero error
+    IF :NEW.TotalDuration <> 0 THEN
+        -- Calculate SleepQualityIndex based on the fetched values from the table
+        :NEW.SleepQualityIndex := ((:NEW.Deep / :NEW.TotalDuration) * 0.25) + ((:NEW.Light / :NEW.TotalDuration) * 0.5) + ((:NEW.Rem / :NEW.TotalDuration) * 0.25);
+    ELSE
+        -- Set SleepQualityIndex to NULL if TotalDuration is zero
+        :NEW.SleepQualityIndex := NULL;
+    END IF;
+END;
+/
+
 
 
 INSERT INTO Sleep (UserID, time_stamp, TotalDuration, Deep, Light, Rem) VALUES (1, TO_TIMESTAMP('2024-03-01 23:00:00', 'YYYY-MM-DD HH24:MI:SS'), 5, 2, 2, 1);
@@ -163,7 +179,21 @@ INSERT INTO Sleep (UserID, time_stamp, TotalDuration, Deep, Light, Rem) VALUES (
 INSERT INTO Sleep (UserID, time_stamp, TotalDuration, Deep, Light, Rem) VALUES (5, TO_TIMESTAMP('2024-03-29 23:00:00', 'YYYY-MM-DD HH24:MI:SS'), 9, 5, 3, 1);
 INSERT INTO Sleep (UserID, time_stamp, TotalDuration, Deep, Light, Rem) VALUES (5, TO_TIMESTAMP('2024-03-30 23:00:00', 'YYYY-MM-DD HH24:MI:SS'), 10, 2, 3, 5);
 
-UPDATE Sleep
-SET SleepQualityIndex = ((Deep / TotalDuration) * 0.25) + ((Light / TotalDuration) * 0.5) + ((Rem / TotalDuration) * 0.25);
+SELECT * FROM sleep WHERE time_stamp = TO_TIMESTAMP('2024-03-24 23:00:00', 'YYYY-MM-DD HH24:MI:SS');
+-- Assuming you have already created the table Sleep and the trigger calculate_sleep_index_trigger
+
+-- Inserting a record into the Sleep table
+INSERT INTO Sleep (UserID, time_stamp, TotalDuration, Deep, Light, Rem) 
+VALUES (1, TO_DATE('2024-03-01 23:00:00', 'YYYY-MM-DD HH24:MI:SS'), 5, 2, 2, 1);
 
 
+SELECT * FROM Sleep WHERE time_stamp = TO_TIMESTAMP('2024-03-01 23:00:00', 'YYYY-MM-DD HH24:MI:SS');
+
+
+-- Updating a record in the Sleep table
+UPDATE Sleep 
+SET TotalDuration = 7, Deep = 3, Light = 2, Rem = 2
+WHERE UserID = 1 AND time_stamp = TO_TIMESTAMP('2024-03-01 23:00:00', 'YYYY-MM-DD HH24:MI:SS');
+
+
+SELECT * FROM Sleep WHERE time_stamp = TO_TIMESTAMP('2024-03-01 23:00:00', 'YYYY-MM-DD HH24:MI:SS');
