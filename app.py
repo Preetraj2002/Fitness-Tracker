@@ -54,7 +54,7 @@ def main():
                     "container": {"padding": "5!important","background-color":'#080808',"color":"#e4e0e0"},# pkc=#eaf8db
         "icon": {"color": "#1f211c", "font-size": "23px"}, 
         "nav-link": {"color":"#e4e0e0","font-size": "20px", "text-align": "left", "margin":"0px", "--hover-color": "#1f211c"},
-        "nav-link-selected": {"background-color": "yellow","color":"#1f211c"},} # pdc=fg
+        "nav-link-selected": {"background-color": "#00FFFB","color":"#1f211c"},} # pdc=fg
                 
                 )
 
