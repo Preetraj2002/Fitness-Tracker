@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import plotly.graph_objects as go
 import datetime
 import pandas as pd
 from PIL import Image
@@ -113,95 +114,99 @@ def show_charts(user_id, conn):
 
     # Display Water Intake
     st.write(f"## Daily Water Intake for User {user_id}")
-    st.line_chart(water_df.set_index('date_column'))
-    # Set up the plot
-    # plt.rcParams.update({'axes.facecolor':'black'})
-    plt.style.use('dark_background')
-    fig = plt.figure(figsize=(10, 6))
-    plt.plot(water_df.date_column, water_df['total_water_ml'], marker='.', linestyle='-', color='b')
-    plt.title("Daily Water Intake")
-    plt.xlabel('Date')
-    plt.ylabel('Total Water Intake (ml)')
-    plt.xticks(rotation=45)
-    plt.grid(True, color='gray', linestyle='--', linewidth=0.5)
-    # Customize x-axis tick labels to show only date and month
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d-%b'))
-    # Display the plot
-    st.pyplot(fig)
+
+    # plt.style.use('dark_background')
+
+    # Create a Plotly figure
+    fig = go.Figure()
+
+    # Add a line trace for the water intake data
+    fig.add_trace(go.Scatter(x=water_df.date_column, y=water_df['total_water_ml'], mode='lines+markers', name='Water Intake'))
+
+    # Update layout properties
+    fig.update_layout(
+        title="Daily Water Intake",
+        yaxis_title="Total Water Intake (ml)",
+        xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
+        xaxis_tickangle=-45,  # Rotate x-axis tick labels
+        xaxis_showgrid=True,  # Add gridlines
+        yaxis_showgrid=True,
+    )
+
+    # Display the interactive plot
+    st.plotly_chart(fig)
 
     calories_df = fetch_calories(user_id, cur)
 
-    # Display Calories Burnt
-    st.write(f"## Daily Calories Burnt for User {user_id}")
-    st.line_chart(calories_df.set_index('date_column'))
+    # Create a Plotly figure
+    fig = go.Figure()
 
-    fig = plt.figure(figsize=(10, 6))
+    # Add a line trace for the daily calories burnt
+    fig.add_trace(go.Scatter(x=calories_df['date_column'], y=calories_df['total_calories_burnt'], mode='lines+markers', name='Calories Burnt'))
 
-    # Plot the daily calories burnt
-    plt.plot(calories_df.date_column, calories_df['total_calories_burnt'], marker='.', linestyle='-', color='r')
-
-    # Set plot title and axis labels
-    plt.title("Daily Calories Burnt")
-    plt.xlabel('Date')
-    plt.ylabel('Total Calories Burnt')
-
-    # Rotate x-axis tick labels
-    plt.xticks(rotation=45)
-
-    # Add gridlines
-    plt.grid(True, color='gray', linestyle='--', linewidth=0.5)
-
-    # Customize x-axis tick labels to show only date and month
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d-%b'))
+    # Update layout properties
+    fig.update_layout(
+        title="Daily Calories Burnt",
+        yaxis_title="Total Calories Burnt",
+        xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
+        xaxis_tickangle=-45,  # Rotate x-axis tick labels
+        xaxis_showgrid=True,  # Add gridlines
+        yaxis_showgrid=True,
+        # plot_bgcolor='rgba(0,0,0,0)',  # Set plot background color to transparent
+        # paper_bgcolor='rgba(0,0,0,0)',  # Set paper background color to transparent
+    )
 
     # Display the plot
-    st.pyplot(fig)
+    st.plotly_chart(fig)
 
     sleep_df = fetch_sleep_time(user_id, cur)
-    fig = plt.figure(figsize=(10, 6))
 
-    # Plot the Sleep Duration
-    plt.plot(sleep_df.date_column, sleep_df['total_sleep'], marker='.', linestyle='-', color='r')
+    # Create a Plotly figure
+    fig = go.Figure()
 
-    # Set plot title and axis labels
-    plt.title("Daily Sleep Duration")
-    plt.xlabel('Date')
-    plt.ylabel('Total Sleep(hours)')
+    # Add a line trace for the daily sleep duration
+    fig.add_trace(go.Scatter(x=sleep_df['date_column'], y=sleep_df['total_sleep'], mode='lines+markers', name='Sleep Duration'))
 
-    # Rotate x-axis tick labels
-    plt.xticks(rotation=45)
-
-    # Add gridlines
-    plt.grid(True, color='gray', linestyle='--', linewidth=0.5)
-
-    # Customize x-axis tick labels to show only date and month
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d-%b'))
+    # Update layout properties
+    fig.update_layout(
+        title="Daily Sleep Duration",
+        yaxis_title="Total Sleep (hours)",
+        xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
+        xaxis_tickangle=-45,  # Rotate x-axis tick labels
+        xaxis_showgrid=True,  # Add gridlines
+        yaxis_showgrid=True,
+    )
 
     # Display the plot
-    st.pyplot(fig)
+    st.plotly_chart(fig)
 
-    # Create pie chart
-
-    light_sleep = sleep_df['light_sleep'].sum()
-    deep_sleep = sleep_df['deep_sleep'].sum()
-    rem_sleep = sleep_df['rem_sleep'].sum()
+    # Calculate total sleep duration for each sleep stage
+    light_sleep_total = sleep_df['light_sleep'].sum()
+    deep_sleep_total = sleep_df['deep_sleep'].sum()
+    rem_sleep_total = sleep_df['rem_sleep'].sum()
 
     # Create labels and corresponding values for the pie chart
     labels = ['Light Sleep', 'Deep Sleep', 'REM Sleep']
-    sizes = [light_sleep, deep_sleep, rem_sleep]
-    # Define colors for each partition
+    values = [light_sleep_total, deep_sleep_total, rem_sleep_total]
+
+    # Define colors for each sleep stage
     colors = ['lightblue', 'lightgreen', 'lightcoral']
-    fig, ax = plt.subplots()
-    ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
+    from plotly.colors import sequential
 
-    # Equal aspect ratio ensures that pie is drawn as a circle
-    ax.axis('equal')
+    colorscale = sequential.Viridis
+    # Create the pie chart
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.3 ,marker_colors=colorscale,
+                    textinfo='value+percent', textposition='inside',
+                    textfont=dict(size=20,color='white'))])
 
-    # Set plot title
-    st.markdown("## Sleep Distribution")
+
+    # Update layout properties
+    fig.update_layout(
+        title="Sleep Distribution",
+    )
 
     # Display the plot
-    st.pyplot(fig)
+    st.plotly_chart(fig)
 
 
     # food_df = fetch_food_intake(user_id, cur)
