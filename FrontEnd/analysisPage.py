@@ -125,12 +125,29 @@ def fetch_calories(user_id, cur,granularity):
 
 def fetch_water_intake(user_id, cur,granularity):
     # Define SQL query to retrieve water intake data for the specified user
-    water_query = f"""
-    SELECT TRUNC(time_stamp) AS date_column, sum(quantity_ml) AS total_water_ml
-    FROM water_intake
-    WHERE user_id = {user_id}
-    GROUP BY TRUNC(time_stamp)
-    """
+    if granularity == "Daily":
+        water_query = f"""
+        SELECT TRUNC(time_stamp) AS date_column, sum(quantity_ml) AS total_data
+        FROM water_intake
+        WHERE user_id = {user_id}
+        GROUP BY TRUNC(time_stamp)
+        """
+    elif granularity == "Weekly":
+        water_query = f"""
+        SELECT TO_CHAR(time_stamp, 'IYYY-IW') AS week_number, SUM(quantity_ml) AS total_data
+        FROM water_intake
+        WHERE user_id = {user_id}
+        GROUP BY TO_CHAR(time_stamp, 'IYYY-IW')
+        ORDER BY week_number
+        """
+    elif granularity == "Monthly":
+        water_query = f"""
+        SELECT TO_CHAR(time_stamp, 'YYYY-MM') AS month, SUM(quantity_ml) AS total_data
+        FROM water_intake
+        WHERE user_id = {user_id}
+        GROUP BY TO_CHAR(time_stamp, 'YYYY-MM')
+        ORDER BY month
+        """
 
     df = query_and_process(cur, water_query, granularity)
     st.write(df)
@@ -138,29 +155,73 @@ def fetch_water_intake(user_id, cur,granularity):
 
 def fetch_sleep_time(user_id, cur,granularity):
     # Define SQL query to retrieve sleep data for the specified user
-    sleep_query = f"""
-    SELECT TRUNC(time_stamp) AS date_column, sum(totalduration) AS total_sleep,sum(light) AS light_sleep,sum(deep) AS deep_sleep, sum(rem) AS rem_sleep
-    FROM sleep
-    WHERE userid = {user_id}
-    GROUP BY TRUNC(time_stamp)
-    """ 
+
+    if granularity == "Daily":
+        sleep_query = f"""
+        SELECT TRUNC(time_stamp) AS date_column, sum(totalduration) AS total_data,sum(light) AS light_sleep,sum(deep) AS deep_sleep, sum(rem) AS rem_sleep
+        FROM sleep
+        WHERE userid = {user_id}
+        GROUP BY TRUNC(time_stamp)
+        """
+    elif granularity == "Weekly":
+        sleep_query = f"""
+        SELECT TO_CHAR(time_stamp, 'IYYY-IW') AS week_number, sum(totalduration) AS total_data,sum(light) AS light_sleep,sum(deep) AS deep_sleep, sum(rem) AS rem_sleep
+        FROM sleep
+        WHERE userid = {user_id}
+        GROUP BY TO_CHAR(time_stamp, 'IYYY-IW')
+        ORDER BY week_number
+        """
+    else :
+        sleep_query = f"""
+        SELECT TO_CHAR(time_stamp, 'YYYY-MM') AS month, sum(totalduration) AS total_data,sum(light) AS light_sleep,sum(deep) AS deep_sleep, sum(rem) AS rem_sleep
+        FROM sleep
+        WHERE userid = {user_id}
+        GROUP BY TO_CHAR(time_stamp, 'YYYY-MM')
+        ORDER BY month
+        """
+
     cur.execute(sleep_query)
     rows = cur.fetchall()   # list of tuples
+
     # Convert to DataFrame
-    df = pd.DataFrame(rows, columns=['date_column', 'total_sleep', 'light_sleep', 'deep_sleep', 'rem_sleep'])
+    if granularity == "Daily":
+        df = pd.DataFrame(rows, columns=['date_column', 'total_data', 'light_sleep', 'deep_sleep', 'rem_sleep'])
+    elif granularity == "Weekly":
+        df = pd.DataFrame(rows, columns=['week_number', 'total_data', 'light_sleep', 'deep_sleep', 'rem_sleep'])
+    elif granularity == "Monthly":
+        df = pd.DataFrame(rows, columns=['month', 'total_data', 'light_sleep', 'deep_sleep', 'rem_sleep'])
     st.write(df)
     return df
 
 
 def fetch_food_intake(user_id, cur,granularity):
     # Define SQL query to retrieve food intake data for the specified user
-    food_query = f"""
-    SELECT TRUNC(time_stamp) AS date_column, sum(calories) AS total_calories
-    FROM foodlog
-    WHERE userid = {user_id}
-    GROUP BY TRUNC(time_stamp),  
-    """
 
+    if granularity == "Daily":
+        food_query = f"""
+        SELECT TRUNC(timestamp) AS date_column, sum(calories) AS total_calories
+        FROM foodlog
+        WHERE userid = {user_id}
+        GROUP BY TRUNC(timestamp)
+        """
+
+    elif granularity == "Weekly":
+        food_query = f"""
+        SELECT TO_CHAR(timestamp, 'IYYY-IW') AS week_number, sum(calories) AS total_calories
+        FROM foodlog
+        WHERE userid = {user_id}
+        GROUP BY TO_CHAR(timestamp, 'IYYY-IW')
+        ORDER BY week_number
+        """
+    elif granularity == "Monthly":
+        food_query = f"""
+        SELECT TO_CHAR(timestamp, 'YYYY-MM') AS month, sum(calories) AS total_calories
+        FROM foodlog
+        WHERE userid = {user_id}
+        GROUP BY TO_CHAR(timestamp, 'YYYY-MM')
+        ORDER BY month
+        """
+        
     df = query_and_process(cur, food_query, granularity)
     st.write(df)
     return df
@@ -172,18 +233,30 @@ def show_charts(user_id, conn):
     cur = conn.cursor()
 
     # Fetch data from Oracle database
-    age ,sex, weight_kg, height_cm = user_info(user_id, cur)
+    sex, age, weight_kg, height_cm = user_info(user_id, cur)
 
     data = {
-        "Attribute": ["Age",  "Sex", "Calories Weight(kg)", "Height(cm)"],
+        "Attribute": ["Age",  "Sex", "Weight(kg)", "Height(cm)"],
         "Value": [age, sex, weight_kg, height_cm],
     }
     df = pd.DataFrame(data)
+    print(df)
 
     user_df = df.style.hide(axis='index')
     user_df.hide(axis='columns')
     
-    st.write(user_df.to_html(), unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("User Info")
+        st.write(user_df.to_html(), unsafe_allow_html=True)
+
+    with col2:
+        if sex=='Male':
+                st.image('Asset/male.png', width=300)
+        else:
+                st.image('Asset/female.png', width=300)
+
+    
 
     st.divider()
     # Add a slider to select the granularity (weekly or daily)
@@ -197,62 +270,26 @@ def show_charts(user_id, conn):
         st.write("Monthly Chart")
     else:
         st.write("Daily Chart")
-        # Plot the daily chart here using the Pl
 
 
-
-    water_df = fetch_water_intake(user_id, cur)
-
-    # plt.style.use('dark_background')
-
-    # Create a Plotly figure
-    fig = go.Figure()
-
-    # Add a line trace for the water intake data
-    fig.add_trace(go.Scatter(x=water_df.date_column, y=water_df['total_water_ml'], mode='lines+markers', name='Water Intake'))
-
-    # Update layout properties
-    fig.update_layout(
-        title="Daily Water Intake",
-        yaxis_title="Total Water Intake (ml)",
-        xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
-        xaxis_tickangle=-45,  # Rotate x-axis tick labels
-        xaxis_showgrid=True,  # Add gridlines
-        yaxis_showgrid=True,
-    )
-
-    # Display the interactive plot
-    st.plotly_chart(fig)
+    water_df = fetch_water_intake(user_id, cur,granularity)
+    plot_data(water_df, "Water Intake", "Date", "Water Intake (ml)", granularity)
 
     st.divider()
 
     calories_df = fetch_calories(user_id, cur,granularity)
     plot_data(calories_df, "Calories Burnt", "Date", "Calories", granularity)
 
-   
     st.divider()
 
-    sleep_df = fetch_sleep_time(user_id, cur)
+    # food_df = fetch_food_intake(user_id, cur,granularity)
+    # plot_data(food_df, "Calories Taken", "Date", "Calories", granularity)
+
+    st.divider()
+
+    sleep_df = fetch_sleep_time(user_id, cur,granularity)
+    plot_data(sleep_df, "Sleep Time", "Date", "Sleep Time (hours)", granularity)
     
-    # Create a Plotly figure
-    fig = go.Figure()
-
-    # Add a line trace for the daily sleep duration
-    fig.add_trace(go.Scatter(x=sleep_df['date_column'], y=sleep_df['total_sleep'], mode='lines+markers', name='Sleep Duration'))
-
-    # Update layout properties
-    fig.update_layout(
-        title="Daily Sleep Duration",
-        yaxis_title="Total Sleep (hours)",
-        xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
-        xaxis_tickangle=-45,  # Rotate x-axis tick labels
-        xaxis_showgrid=True,  # Add gridlines
-        yaxis_showgrid=True,
-    )
-
-    # Display the plot
-    st.plotly_chart(fig)
-
     # Calculate total sleep duration for each sleep stage
     light_sleep_total = sleep_df['light_sleep'].sum()
     deep_sleep_total = sleep_df['deep_sleep'].sum()
@@ -279,7 +316,8 @@ def show_charts(user_id, conn):
     st.plotly_chart(fig)
 
 
-    # food_df = fetch_food_intake(user_id, cur)
+    
+
 
 
 
