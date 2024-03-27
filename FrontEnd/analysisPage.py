@@ -21,6 +21,20 @@ def user_info(user_id, cur):
     
     return sex, age, wt, ht
 
+def query_and_process(cur, query, granularity):
+
+    cur.execute(query)
+    rows = cur.fetchall()
+
+    if granularity == "Daily":
+        df = pd.DataFrame(rows, columns=['date_column', 'total_data'])
+    elif granularity == "Weekly":
+        df = pd.DataFrame(rows, columns=['week_number', 'total_data'])
+    elif granularity == "Monthly":
+        df = pd.DataFrame(rows, columns=['month', 'total_data'])
+
+    return df
+
 # Define function to plot data based on granularity
 def plot_data(df, title, x_axis_title, y_axis_title, granularity):
     fig = go.Figure()
@@ -103,24 +117,13 @@ def fetch_calories(user_id, cur,granularity):
         ORDER BY month
         """
 
-
-    cur.execute(exercise_query)
-    rows = cur.fetchall()
-
-    if granularity == "Daily":
-        df = pd.DataFrame(rows, columns=['date_column', 'total_data'])
-    elif granularity == "Weekly":
-        df = pd.DataFrame(rows, columns=['week_number', 'total_data'])
-    else :
-        df = pd.DataFrame(rows, columns=['month', 'total_data'])
-
+    df = query_and_process(cur, exercise_query, granularity)
     # Display the DataFrame
     st.write(df)
     return df
 
 
-
-def fetch_water_intake(user_id, cur):
+def fetch_water_intake(user_id, cur,granularity):
     # Define SQL query to retrieve water intake data for the specified user
     water_query = f"""
     SELECT TRUNC(time_stamp) AS date_column, sum(quantity_ml) AS total_water_ml
@@ -128,14 +131,12 @@ def fetch_water_intake(user_id, cur):
     WHERE user_id = {user_id}
     GROUP BY TRUNC(time_stamp)
     """
-    cur.execute(water_query)
-    rows = cur.fetchall()   # list of tuples
-    # Convert to DataFrame
-    df = pd.DataFrame(rows, columns=['date_column', 'total_water_ml'])
+
+    df = query_and_process(cur, water_query, granularity)
     st.write(df)
     return df
 
-def fetch_sleep_time(user_id, cur):
+def fetch_sleep_time(user_id, cur,granularity):
     # Define SQL query to retrieve sleep data for the specified user
     sleep_query = f"""
     SELECT TRUNC(time_stamp) AS date_column, sum(totalduration) AS total_sleep,sum(light) AS light_sleep,sum(deep) AS deep_sleep, sum(rem) AS rem_sleep
@@ -151,7 +152,7 @@ def fetch_sleep_time(user_id, cur):
     return df
 
 
-def fetch_food_intake(user_id, cur):
+def fetch_food_intake(user_id, cur,granularity):
     # Define SQL query to retrieve food intake data for the specified user
     food_query = f"""
     SELECT TRUNC(time_stamp) AS date_column, sum(calories) AS total_calories
@@ -160,17 +161,9 @@ def fetch_food_intake(user_id, cur):
     GROUP BY TRUNC(time_stamp),  
     """
 
-    cur.execute(food_query)
-    rows = cur.fetchall()   # list of tuples
-
-    # Convert to DataFrame
-    food_df = pd.DataFrame(rows, columns=['date_column', 'total_calories'])
-
-    # Display the DataFrame
-    st.write(food_df)
-
-    # Return the DataFrame
-    return food_df
+    df = query_and_process(cur, food_query, granularity)
+    st.write(df)
+    return df
 
 
 
