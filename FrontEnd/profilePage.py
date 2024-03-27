@@ -1,5 +1,7 @@
 import streamlit as st
 from PIL import Image
+from FrontEnd.loginPage import user_login
+
 
 def edit_profile(user_id, conn):
     cur = conn.cursor()
@@ -34,12 +36,12 @@ def edit_profile(user_id, conn):
 
 
 def show_profile(user_id, conn):
-    
-    im=Image.open('Asset/runner.png') 
+
+    im = Image.open("Asset/runner.png")
     # Streamlit app layout
-   # Assuming 'im' is your image variable
+    # Assuming 'im' is your image variable
     col1, col2 = st.columns([1, 9])
-   
+
     with col2:
         st.title("Profile")
     with col1:
@@ -53,12 +55,11 @@ def show_profile(user_id, conn):
     user_data = cur.fetchone()
     col1, col2 = st.columns([1, 1])
     with col1:
-        if user_data[1]=='Male':
-                st.image('Asset/male.png', width=300)
+        if user_data[1] == "Male":
+            st.image("Asset/male.png", width=300)
         else:
-                st.image('Asset/female.png', width=300)
+            st.image("Asset/female.png", width=300)
     with col2:
-        
 
         edit_mode = st.button("Edit Profile")
 
@@ -67,10 +68,36 @@ def show_profile(user_id, conn):
         else:
             # Styling individual data points
             info_style = "font-size: 18px; padding: 10px; background-color: black; border-radius: 5px;"
-        
-            st.write(f"<p style='{info_style}'><b>Name:</b> {user_data[0]}</p>", unsafe_allow_html=True)
-            st.write(f"<p style='{info_style}'><b>Sex:</b> {user_data[1]}</p>", unsafe_allow_html=True)
-            st.write(f"<p style='{info_style}'><b>Age:</b> {user_data[2]}</p>", unsafe_allow_html=True)
-            st.write(f"<p style='{info_style}'><b>Weight (kg):</b> {user_data[3]}</p>", unsafe_allow_html=True)
-            st.write(f"<p style='{info_style}'><b>Height (cm):</b> {user_data[4]}</p>", unsafe_allow_html=True)
-            st.write(f"<p style='{info_style}'><b>BMI:</b> {user_data[5]}</p>", unsafe_allow_html=True)
+
+            st.write(
+                f"<p style='{info_style}'><b>Name:</b> {user_data[0]}</p>",
+                unsafe_allow_html=True,
+            )
+            st.write(
+                f"<p style='{info_style}'><b>Sex:</b> {user_data[1]}</p>",
+                unsafe_allow_html=True,
+            )
+            st.write(
+                f"<p style='{info_style}'><b>Age:</b> {user_data[2]}</p>",
+                unsafe_allow_html=True,
+            )
+            st.write(
+                f"<p style='{info_style}'><b>Weight (kg):</b> {user_data[3]}</p>",
+                unsafe_allow_html=True,
+            )
+            st.write(
+                f"<p style='{info_style}'><b>Height (cm):</b> {user_data[4]}</p>",
+                unsafe_allow_html=True,
+            )
+            st.write(
+                f"<p style='{info_style}'><b>BMI:</b> {user_data[5]}</p>",
+                unsafe_allow_html=True,
+            )
+
+            if st.button("Delete Profile"):
+                cur.callproc("delete_user_and_related_entries", [user_id])
+                conn.commit()
+                session_state = st.session_state
+                session_state.user_id = None
+                st.success("Profile deleted successfully!")
+                user_login()
