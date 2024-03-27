@@ -2,6 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import plotly.graph_objects as go
+from plotly.colors import sequential
 import datetime
 import pandas as pd
 from PIL import Image
@@ -20,22 +21,103 @@ def user_info(user_id, cur):
     
     return sex, age, wt, ht
 
+# Define function to plot data based on granularity
+def plot_data(df, title, x_axis_title, y_axis_title, granularity):
+    fig = go.Figure()
 
-def fetch_calories(user_id, cur):
+    # Check if the DataFrame is empty
+    if not df.empty:
+        if granularity == 'Daily':
+            # Plot line chart for daily data
+            fig.add_trace(go.Scatter(x=df['date_column'], y=df['total_data'], mode='lines+markers'))
+        elif granularity == 'Weekly':
+            # Plot bar chart for weekly data
+            text_inside_bars = df['week_number'] + '<br>' + df['total_data'].astype(str)
+            fig.add_trace(go.Bar(x=df['week_number'], y=df['total_data'], text=text_inside_bars,
+                            textposition='inside', 
+                            hoverinfo='x+text'))
+        elif granularity == 'Monthly':
+            # Plot bar chart for monthly data
+            month_names = []
+
+            for month_year in df['month']:
+                # Split the string to extract month and year
+                year, month = month_year.split('-')
+                
+                # Get the month name from the month number
+                month_name = datetime.date(int(year), int(month), 1).strftime("%B")
+                month_names.append(month_name)
+
+            # Concatenate month name and total data values for displaying inside the bars
+            text_inside_bars = [f"{month}<br>{total}" for month, total in zip(month_names, df['total_data'])]
+
+            fig.add_trace(go.Bar(
+                x=month_names,
+                y=df['total_data'],
+                text=text_inside_bars,  # Display month name and total data inside the bars
+                textposition='inside',  # Position the text inside the bars
+                hoverinfo='text'  # Display only text on hover
+            ))
+            
+    # Update layout properties
+    fig.update_layout(
+        title=title,
+        # xaxis_title=x_axis_title,
+        yaxis_title=y_axis_title,
+        # xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
+        xaxis_tickangle=-45,  # Rotate x-axis tick labels
+        xaxis_showgrid=True,  # Add gridlines
+        yaxis_showgrid=True,
+    )
+
+    # Display the Plotly figure using Streamlit
+    st.plotly_chart(fig)
+
+
+def fetch_calories(user_id, cur,granularity):
    # Define SQL query to retrieve exercise data for the specified user
-    exercise_query = f"""
-    SELECT TRUNC(time_stamp) AS date_column, sum(calories_burnt) AS total_calories_burnt
-    FROM exercise_log
-    WHERE user_id = {user_id}
-    GROUP BY TRUNC(time_stamp)
-    """
+    
+    if granularity == "Daily":
+        exercise_query = f"""
+        SELECT TRUNC(time_stamp) AS date_column, sum(calories_burnt) AS total_data
+        FROM exercise_log
+        WHERE user_id = {user_id}
+        GROUP BY TRUNC(time_stamp)
+        """
+
+    elif granularity == "Weekly":
+        exercise_query = f"""
+        SELECT TO_CHAR(time_stamp, 'IYYY-IW') AS week_number,SUM(calories_burnt) AS total_data
+        FROM exercise_log
+        WHERE user_id = {user_id}
+        GROUP BY TO_CHAR(time_stamp, 'IYYY-IW')
+        ORDER BY week_number
+        """
+
+    else :
+        exercise_query = f"""
+        SELECT TO_CHAR(time_stamp, 'YYYY-MM') AS month ,SUM(calories_burnt) AS total_data
+        FROM exercise_log
+        WHERE user_id = {user_id}
+        GROUP BY TO_CHAR(time_stamp, 'YYYY-MM')
+        ORDER BY month
+        """
+
+
     cur.execute(exercise_query)
     rows = cur.fetchall()
 
-    # Convert exercise data to DataFrame
-    df = pd.DataFrame(rows, columns=['date_column', 'total_calories_burnt'])
+    if granularity == "Daily":
+        df = pd.DataFrame(rows, columns=['date_column', 'total_data'])
+    elif granularity == "Weekly":
+        df = pd.DataFrame(rows, columns=['week_number', 'total_data'])
+    else :
+        df = pd.DataFrame(rows, columns=['month', 'total_data'])
+
+    # Display the DataFrame
     st.write(df)
     return df
+
 
 
 def fetch_water_intake(user_id, cur):
@@ -110,10 +192,23 @@ def show_charts(user_id, conn):
     
     st.write(user_df.to_html(), unsafe_allow_html=True)
 
-    water_df = fetch_water_intake(user_id, cur)
+    st.divider()
+    # Add a slider to select the granularity (weekly or daily)
+    granularity = st.select_slider('Select Granularity', options =['Daily','Weekly','Monthly'],value='Daily')
 
-    # Display Water Intake
-    st.write(f"## Daily Water Intake for User {user_id}")
+    # Based on the selected granularity, display the appropriate chart
+    if granularity == 'Weekly':
+        st.write("Weekly Chart")
+        # Plot the weekly chart here using the Plotly or Matplotlib code for weekly data
+    elif granularity == 'Monthly':
+        st.write("Monthly Chart")
+    else:
+        st.write("Daily Chart")
+        # Plot the daily chart here using the Pl
+
+
+
+    water_df = fetch_water_intake(user_id, cur)
 
     # plt.style.use('dark_background')
 
@@ -136,31 +231,16 @@ def show_charts(user_id, conn):
     # Display the interactive plot
     st.plotly_chart(fig)
 
-    calories_df = fetch_calories(user_id, cur)
+    st.divider()
 
-    # Create a Plotly figure
-    fig = go.Figure()
+    calories_df = fetch_calories(user_id, cur,granularity)
+    plot_data(calories_df, "Calories Burnt", "Date", "Calories", granularity)
 
-    # Add a line trace for the daily calories burnt
-    fig.add_trace(go.Scatter(x=calories_df['date_column'], y=calories_df['total_calories_burnt'], mode='lines+markers', name='Calories Burnt'))
-
-    # Update layout properties
-    fig.update_layout(
-        title="Daily Calories Burnt",
-        yaxis_title="Total Calories Burnt",
-        xaxis_tickformat='%d-%b',  # Customize x-axis tick labels to show only date and month
-        xaxis_tickangle=-45,  # Rotate x-axis tick labels
-        xaxis_showgrid=True,  # Add gridlines
-        yaxis_showgrid=True,
-        # plot_bgcolor='rgba(0,0,0,0)',  # Set plot background color to transparent
-        # paper_bgcolor='rgba(0,0,0,0)',  # Set paper background color to transparent
-    )
-
-    # Display the plot
-    st.plotly_chart(fig)
+   
+    st.divider()
 
     sleep_df = fetch_sleep_time(user_id, cur)
-
+    
     # Create a Plotly figure
     fig = go.Figure()
 
@@ -189,9 +269,6 @@ def show_charts(user_id, conn):
     labels = ['Light Sleep', 'Deep Sleep', 'REM Sleep']
     values = [light_sleep_total, deep_sleep_total, rem_sleep_total]
 
-    # Define colors for each sleep stage
-    colors = ['lightblue', 'lightgreen', 'lightcoral']
-    from plotly.colors import sequential
 
     colorscale = sequential.Viridis
     # Create the pie chart
