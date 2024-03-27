@@ -23,9 +23,9 @@ def navigation(user_id, conn):
             app = option_menu(
                 menu_title='Fitness-Tracker',
                 options=['Profile','Food','Sleep','Water','Exercise','Analysis','Get Motivation','Logout'],
-                icons=['person-fill','cake-fill','moon-fill','water','play-fill','play-fill','sun-fill','info-circle-fill'],
+                icons=['person-fill','cake-fill','moon-fill','water','play-fill','graph-up','sun-fill','info-circle-fill'],
                 menu_icon='activity',
-                default_index=5,
+                default_index=6,
                 styles={
                     "container": {"padding": "5!important","background-color":'#080808',"color":"#e4e0e0"},# pkc=#eaf8db
         "icon": {"color": "#1f211c", "font-size": "23px"}, 
