@@ -204,9 +204,9 @@ BEGIN
     :NEW.Calories := (:NEW.Quantity / 100) * food_cal;
 END;
 /
-INSERT INTO FOODLOG (UserID, Timestamp, FoodCategory, Food, Quantity)
+INSERT INTO FOODLOG (UserID, time_stamp, FoodCategory, Food, Quantity)
 SELECT 1, '2024-04-01 9:00 AM', 'Sugars', 'Sugarcane, juice', 42 FROM DUAL ;
 
 SELECT *
 FROM FOODLOG
-WHERE Timestamp = '2024-04-01 9:00 AM';
+WHERE time_stamp = '2024-04-01 9:00 AM';
