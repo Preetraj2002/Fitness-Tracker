@@ -212,7 +212,7 @@ hashmap = {
 def insert_food_intake(conn, user_id, time_stamp, food_category, food, quantity):
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO FOODLOG (UserID, Timestamp, FoodCategory, Food, Quantity) VALUES (:user_id, :time_stamp, :foodCategory, :food, :quantity)",
+        "INSERT INTO FOODLOG (UserID, time_stamp, FoodCategory, Food, Quantity) VALUES (:user_id, :time_stamp, :foodCategory, :food, :quantity)",
         {
             "user_id": user_id,
             "time_stamp": time_stamp,
@@ -263,7 +263,7 @@ def food_calorie_tracker(user_id, conn):
 
         cur = conn.cursor()
         cur.execute(
-            "SELECT Calories FROM FOODLOG WHERE UserID = :user_id AND Timestamp = :time_stamp",
+            "SELECT Calories FROM FOODLOG WHERE UserID = :user_id AND time_stamp = :time_stamp",
             {"user_id": user_id, "time_stamp": time_stamp},
         )
         calories = cur.fetchall()  # Fetch the calorie value

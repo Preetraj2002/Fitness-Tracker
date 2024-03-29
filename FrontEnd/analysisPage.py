@@ -199,26 +199,26 @@ def fetch_food_intake(user_id, cur,granularity):
 
     if granularity == "Daily":
         food_query = f"""
-        SELECT TRUNC(timestamp) AS date_column, sum(calories) AS total_calories
+        SELECT TRUNC(time_stamp) AS date_column, sum(calories) AS total_calories
         FROM foodlog
         WHERE userid = {user_id}
-        GROUP BY TRUNC(timestamp)
+        GROUP BY TRUNC(time_stamp)
         """
 
     elif granularity == "Weekly":
         food_query = f"""
-        SELECT TO_CHAR(timestamp, 'IYYY-IW') AS week_number, sum(calories) AS total_calories
+        SELECT TO_CHAR(time_stamp, 'IYYY-IW') AS week_number, sum(calories) AS total_calories
         FROM foodlog
         WHERE userid = {user_id}
-        GROUP BY TO_CHAR(timestamp, 'IYYY-IW')
+        GROUP BY TO_CHAR(time_stamp, 'IYYY-IW')
         ORDER BY week_number
         """
     elif granularity == "Monthly":
         food_query = f"""
-        SELECT TO_CHAR(timestamp, 'YYYY-MM') AS month, sum(calories) AS total_calories
+        SELECT TO_CHAR(time_stamp, 'YYYY-MM') AS month, sum(calories) AS total_calories
         FROM foodlog
         WHERE userid = {user_id}
-        GROUP BY TO_CHAR(timestamp, 'YYYY-MM')
+        GROUP BY TO_CHAR(time_stamp, 'YYYY-MM')
         ORDER BY month
         """
         
