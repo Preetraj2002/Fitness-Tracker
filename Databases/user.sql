@@ -45,6 +45,10 @@ INSERT INTO "user" (id, name, sex, age, weight_kg, height_cm)
 VALUES
 (5, 'Aarti Roy', 'Female', 20, 60, 170);
 
+INSERT INTO "user" ( id, name, sex, age, weight_kg, height_cm)
+VALUES
+(6,'Aarohi Roy', 'Female', 25, 60, 170);
+
 SELECT id from "user"  WHERE username = 'psingh'  AND password = 'pqr';
 
 UPDATE "user" SET username = 'psingh', password = 'pqr' WHERE id = 1;
@@ -52,6 +56,7 @@ UPDATE "user" SET username = 'rohan123', password = '1234' WHERE id = 2;
 UPDATE "user" SET username = 'sdesai', password = '5678' WHERE id = 3;
 UPDATE "user" SET username = 'vinay123', password = 'abcd' WHERE id = 4;
 UPDATE "user" SET username = 'aroy123', password = 'aroy' WHERE id = 5;
+UPDATE "user" SET username = 'aroy1234', password = 'aroy1' WHERE id = 6;
 
 CREATE SEQUENCE user_id_seq
   START WITH 6
@@ -68,6 +73,31 @@ BEGIN
   FROM dual;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE delete_user_and_related_entries(user_id_param IN "user".id%TYPE) IS
+BEGIN
+    -- Delete from water_intake
+    DELETE FROM water_intake WHERE water_intake.user_id = user_id_param;
+
+    -- Delete from sleep
+    DELETE FROM sleep WHERE UserID = user_id_param;
+
+    -- Delete from foodlog
+    DELETE FROM foodlog WHERE UserID = user_id_param;
+
+    -- Delete from exercise_log
+    DELETE FROM exercise_log WHERE exercise_log.user_id = user_id_param;
+
+    -- Delete from user
+    DELETE FROM "user" WHERE id = user_id_param;
+END delete_user_and_related_entries;
+/
+
+BEGIN
+    delete_user_and_related_entries(6); -- Assuming the user's id is 1
+END;
+/
+
 
 
 

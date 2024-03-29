@@ -13,43 +13,75 @@ from streamlit_option_menu import option_menu
 
 
 from PIL import Image
-im=Image.open('Asset/logo.png')
+
+im = Image.open("Asset/logo.png")
+
 
 def navigation(user_id, conn):
     # If user is logged in, show the selected page
     if user_id:
         st.empty()
-        with st.sidebar:        
+        with st.sidebar:
             app = option_menu(
-                menu_title='Fitness-Tracker',
-                options=['Profile','Food','Sleep','Water','Exercise','Analysis','Get Motivation','Logout'],
-                icons=['person-fill','cake-fill','moon-fill','water','play-fill','graph-up','sun-fill','info-circle-fill'],
-                menu_icon='activity',
+                menu_title="Fitness-Tracker",
+                options=[
+                    "Profile",
+                    "Food",
+                    "Sleep",
+                    "Water",
+                    "Exercise",
+                    "Analysis",
+                    "Get Motivation",
+                    "Logout",
+                ],
+                icons=[
+                    "person-fill",
+                    "cake-fill",
+                    "moon-fill",
+                    "water",
+                    "activity",
+                    "play-fill",
+                    "sun-fill",
+                    "info-circle-fill",
+                ],
+                menu_icon="activity",
                 default_index=6,
                 styles={
-                    "container": {"padding": "5!important","background-color":'#080808',"color":"#e4e0e0"},# pkc=#eaf8db
-        "icon": {"color": "#1f211c", "font-size": "23px"}, 
-        "nav-link": {"color":"#e4e0e0","font-size": "20px", "text-align": "left", "margin":"0px", "--hover-color": "#1f211c"},
-        "nav-link-selected": {"background-color": "#00FFFB","color":"#1f211c"},} # pdc=fg
-                
-                )
+                    "container": {
+                        "padding": "5!important",
+                        "background-color": "#080808",
+                        "color": "#e4e0e0",
+                    },  # pkc=#eaf8db
+                    "icon": {"color": "#1f211c", "font-size": "23px"},
+                    "nav-link": {
+                        "color": "#e4e0e0",
+                        "font-size": "20px",
+                        "text-align": "left",
+                        "margin": "0px",
+                        "--hover-color": "#1f211c",
+                    },
+                    "nav-link-selected": {
+                        "background-color": "#00FFFB",
+                        "color": "#1f211c",
+                    },
+                },  # pdc=fg
+            )
 
-        
+        if app == "Get Motivation":
+            show_motivational_quote()
         if app == "Food":
-          food_calorie_tracker(user_id, conn)
+            food_calorie_tracker(user_id, conn)
         if app == "Sleep":
-            sleep_quality_tracker(user_id, conn)     
-        if app == 'Water':
+            sleep_quality_tracker(user_id, conn)
+        if app == "Water":
             water_intake_tracker(user_id, conn)
         if app == "Profile":
-            show_profile(user_id, conn)  
+            show_profile(user_id, conn)
         if app == "Exercise":
             exercise_tracker(user_id, conn)
         if app == "Analysis":
             show_charts(user_id, conn)
-        if app == "Get Motivation":
-            show_motivational_quote()
-        if app == 'Logout':
+        if app == "Logout":
             session_state = st.session_state
             session_state.user_id = None
             st.success("Logout successful")
