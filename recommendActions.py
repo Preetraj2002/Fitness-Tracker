@@ -43,7 +43,7 @@ def fetch_lowest_met_exercises(n):
     cursor = conn.cursor()
     cursor.execute(query)
     result = cursor.fetchall()
-    print(result)
+    # print(result)
     cursor.close()
     return result
 
@@ -58,7 +58,7 @@ def fetch_highest_met_exercises(n):
     cursor = conn.cursor()
     cursor.execute(query)
     result = cursor.fetchall()
-    print(result)
+    # print(result)
     cursor.close()
     return result
 
@@ -73,7 +73,7 @@ def fetch_lowest_caloric_density_foods(n):
     cursor = conn.cursor()
     cursor.execute(query)
     result = cursor.fetchall()
-    print(result)
+    # print(result)
     cursor.close()
     return result
 
@@ -88,7 +88,7 @@ def fetch_highest_caloric_foods(n):
     cursor = conn.cursor()
     cursor.execute(query)
     result = cursor.fetchall()
-    print(result)
+    # print(result)
     cursor.close()
     return result
 
@@ -105,7 +105,7 @@ def generate_recommendations(data):
     # Generate recommendations based on analyzed data
     if calorie_deficit < 0:
         recommendations.append("You are in calorie deficit.")
-        recommendations.append("If losing your weight in the goal, consider increasing your calorie intake.")
+        recommendations.append("If losing your weight is not the goal, consider increasing your calorie intake.")
 
         # Fetch foods with the highest caloric densities
         highest_caloric_density_foods = fetch_highest_caloric_foods(10)

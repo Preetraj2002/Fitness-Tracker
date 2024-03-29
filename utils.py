@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import cx_Oracle
 import time
 import os
+from recommendActions import generate_recommendations
 from dotenv import load_dotenv
 # Load the environment variables from the `.env` file
 load_dotenv()
@@ -42,9 +43,9 @@ def fetch_fitness_data(user_id):
     """
 
     # Fetch calories consumed today
-    # cur.execute(calories_in_query,user_id=user_id, today=today)
-    # calories_in_today = cur.fetchone()[0] or 0
-    calories_in_today = 2000
+    cur.execute(calories_in_query,user_id=user_id, today=today)
+    calories_in_today = cur.fetchone()[0] or 0
+    
 
     # Fetch calories burnt today
     cur.execute(calories_burnt_query,user_id=user_id, today=today)
@@ -56,17 +57,25 @@ def fetch_fitness_data(user_id):
 
     # Retrieve fitness data for the previous day
     yesterday = today - timedelta(days=1)
+    # print(yesterday)
 
     # Query to retrieve sleep duration for yesterday
     sleep_duration_query = """
-    SELECT SUM(totalduration) AS total_sleep_duration
+    SELECT SUM(totalduration) AS total_sleep, 
+    SUM(light) AS light_sleep, 
+    SUM(deep) AS deep_sleep, 
+    SUM(rem) AS rem_sleep
     FROM sleep
     WHERE userid = :user_id AND TRUNC(time_stamp) = :yesterday
     """
 
     # Fetch sleep duration for yesterday
     cur.execute(sleep_duration_query,user_id=user_id, yesterday=yesterday)
-    sleep_duration_yesterday = cur.fetchone()[0] or 0
+    sleep_row = cur.fetchone()
+    sleep_duration_yesterday = sleep_row[0] or 0
+    light_sleep = sleep_row[1] or 0
+    deep_sleep = sleep_row[2] or 0
+    rem_sleep = sleep_row[3] or 0
 
     cur.execute(
         'SELECT * FROM "user" WHERE id = :user_id',
@@ -92,7 +101,12 @@ def fetch_fitness_data(user_id):
         'calories_in_today': calories_in_today,
         'calories_burnt_today': calories_burnt_today,
         'water_intake_today': water_intake_today,
-        'sleep_duration_yesterday': sleep_duration_yesterday,
+        'sleep_data': {
+            'sleep_duration_yesterday': sleep_duration_yesterday,
+            'light_sleep': light_sleep,
+            'deep_sleep': deep_sleep,
+            'rem_sleep': rem_sleep
+        }
     }
 
     return data
@@ -109,13 +123,13 @@ def send_email(user_id,user_mail="preetrajgupta2002@gmail.com"):
     today = datetime.now().date()
     data = fetch_fitness_data(user_id)
     name = data['name']
-    calories_in_today = data['calories_in_today']  
-    calories_burnt_today = data['calories_burnt_today'] 
+    calories_in_today = data['calories_in_today']
+    calories_burnt_today = data['calories_burnt_today']
     water_intake_today = data['water_intake_today']
 
     # Retrieve fitness data for the previous day
     yesterday = today - timedelta(days=1)
-    sleep_duration_yesterday = data['sleep_duration_yesterday']
+    sleep_duration_yesterday = data['sleep_data']['sleep_duration_yesterday']
 
     # Format email message
     subject = f"Daily Fitness Report - {today}"
@@ -126,14 +140,7 @@ def send_email(user_id,user_mail="preetrajgupta2002@gmail.com"):
     body += f"\n\nYour sleep duration yesterday (on {yesterday}) was {sleep_duration_yesterday} hours."
 
     # Check for recommendations based on data
-    recommendations = []
-    if calories_in_today > calories_burnt_today:
-        recommendations.append("Consider reducing your calorie intake to maintain a balance.")
-    elif calories_in_today < calories_burnt_today:
-        recommendations.append("Ensure you're consuming enough calories to meet your energy needs.")
-    if water_intake_today < 2000:
-        recommendations.append("Drink more water to stay hydrated throughout the day.")
-
+    recommendations = generate_recommendations(data) 
     # Add recommendations to email body
     if recommendations:
         body += "\n\nRecommendations:\n"
@@ -153,7 +160,7 @@ def send_email(user_id,user_mail="preetrajgupta2002@gmail.com"):
                 server.login(sender, password)
                 # Send the email
                 server.sendmail(sender, receiver, message)
-                print("Email sent successfully")
+                print(f"Email sent successfully to User(ID:{user_id})")
         except Exception as e:
             print(f"Error sending email: {e}")
     else:
