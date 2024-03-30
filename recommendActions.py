@@ -105,46 +105,46 @@ def generate_recommendations(data):
     # Generate recommendations based on analyzed data
     if calorie_deficit < 0:
         recommendations.append("You are in calorie deficit.")
-        recommendations.append("If losing your weight is not the goal, consider increasing your calorie intake.")
+        recommendations.append("\nIf losing your weight is not the goal, consider increasing your calorie intake.")
 
         # Fetch foods with the highest caloric densities
         highest_caloric_density_foods = fetch_highest_caloric_foods(10)
         if highest_caloric_density_foods:
-            recommendations.append("Consider these foods recommendations to increase your calorie intake:")
+            recommendations.append("\nConsider these foods recommendations to increase your calorie intake:")
             for food in highest_caloric_density_foods:
                 recommendations.append(f"- {food[0]}")
 
         # Fetch exercises with the lowest MET values
         lowest_met_exercises = fetch_lowest_met_exercises(4)
         if lowest_met_exercises:
-            recommendations.append("To still enjoy the fun of exercise, consider these exercises to balance your calorie burnout (based on MET values):")
+            recommendations.append("\nYou can still enjoy the fun and benefits of doing exercise by switching to low intensity workouts,\nconsider these exercises to balance your calorie burnout (based on MET values):")
             for exercise in lowest_met_exercises:
                 recommendations.append(f"- {exercise[0]}")
 
     elif calorie_deficit > 0:
-        recommendations.append("Ensure you're burning enough calories through physical activity.")
-        recommendations.append("Choose low-calorie foods to maintain a healthy diet.")
+        recommendations.append("You are in caloric surplus ensure you're burning enough calories through physical activity.")
+        recommendations.append("\nChoose low-calorie foods to maintain a healthy diet.")
 
         # Fetch foods with the lowest caloric densities
         lowest_caloric_density_foods = fetch_lowest_caloric_density_foods(10)  
         if lowest_caloric_density_foods:
-            recommendations.append("Choose these foods to feel full while having optimal calories:")
+            recommendations.append("\nChoose these foods to feel full while having optimal calories:")
             for food in lowest_caloric_density_foods:
                 recommendations.append(f"- {food[0]}")
 
         # Fetch exercises with the highest MET values
         highest_met_exercises = fetch_highest_met_exercises(4) 
         if highest_met_exercises:
-            recommendations.append("Also consider these exercises to burn more calories in less time (based on MET values): ")
+            recommendations.append("\nAlso consider these exercises to burn more calories in less time (based on MET values): ")
             for exercise in highest_met_exercises:
                 recommendations.append(f"- {exercise[0]}")
 
     if hydration_level < 0.75:
-        recommendations.append(f"Your hydration level is {hydration_level*100}% less than 75%.")
+        recommendations.append(f"\nYour hydration level is {hydration_level*100}% less than 75%.")
         recommendations.append("Drink more water throughout the day to stay hydrated.")
 
     if sleep_quality < 0.80:
-        recommendations.append(f"Your sleep quality is {sleep_quality*100}% (less than 80%).")
+        recommendations.append(f"\nYour sleep quality is {sleep_quality*100}% (less than 80%).")
         recommendations.append("Try to improve your sleep quality by following these tips:")
         recommendations.append("- Avoid blue light from screens before bedtime.")
         recommendations.append("- Eat a light snack before bed to promote better sleep.")

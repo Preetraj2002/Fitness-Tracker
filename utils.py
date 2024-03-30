@@ -8,7 +8,7 @@ from recommendActions import generate_recommendations
 from dotenv import load_dotenv
 # Load the environment variables from the `.env` file
 load_dotenv()
-
+TIME=10
 
 
 
@@ -23,9 +23,9 @@ def fetch_fitness_data(user_id):
 
     # Query to retrieve calories consumed today
     calories_in_query = """
-    SELECT SUM(calories_consumed) AS total_calories_consumed
+    SELECT SUM(calories) AS total_calories_consumed
     FROM foodlog
-    WHERE user_id = :user_id AND TRUNC(time_stamp) = :today
+    WHERE userid = :user_id AND TRUNC(time_stamp) = :today
     """
 
     # Query to retrieve calories burnt today
@@ -44,12 +44,12 @@ def fetch_fitness_data(user_id):
 
     # Fetch calories consumed today
     cur.execute(calories_in_query,user_id=user_id, today=today)
-    calories_in_today = cur.fetchone()[0] or 0
+    calories_in_today = round(cur.fetchone()[0],2) or 0
     
 
     # Fetch calories burnt today
     cur.execute(calories_burnt_query,user_id=user_id, today=today)
-    calories_burnt_today = cur.fetchone()[0] or 0
+    calories_burnt_today = round(cur.fetchone()[0],2) or 0
 
     # Fetch water intake today
     cur.execute(water_intake_query,user_id=user_id, today=today)
@@ -134,16 +134,16 @@ def send_email(user_id,user_mail="preetrajgupta2002@gmail.com"):
     # Format email message
     subject = f"Daily Fitness Report - {today}"
     body = f"Hey! {name},\n\nDaily Fitness Report for {today}:\n\n"
-    body += f"Calories In: {calories_in_today}\n"
-    body += f"Calories Burnt: {calories_burnt_today}\n"
-    body += f"Water Intake: {water_intake_today}\n"
-    body += f"\n\nYour sleep duration yesterday (on {yesterday}) was {sleep_duration_yesterday} hours."
+    body += f"Calories In:              {calories_in_today}\n"
+    body += f"Calories Burnt:           {calories_burnt_today}\n"
+    body += f"Water Intake:             {water_intake_today} ml\n"
+    body += f"Sleep duration yesterday: {sleep_duration_yesterday} hours."
 
     # Check for recommendations based on data
     recommendations = generate_recommendations(data) 
     # Add recommendations to email body
     if recommendations:
-        body += "\n\nRecommendations:\n"
+        body += "\n\nRecommendations:\n\n"
         body += "\n".join(recommendations)
 
     # Compose email
@@ -152,7 +152,7 @@ def send_email(user_id,user_mail="preetrajgupta2002@gmail.com"):
     
     # Check if the current time is after 11 PM
     now = datetime.now()
-    if now.hour >= 23:
+    if now.hour >= TIME:
         try:
             # Connect to the SMTP server
             with smtplib.SMTP("smtp.gmail.com", 587) as server:
@@ -172,7 +172,7 @@ while True:
     now = datetime.now()
     print(now)
     # If it's after 11 PM, send the email
-    if now.hour >= 23:
+    if now.hour >= TIME:
         # Send email for each user
         conn = cx_Oracle.connect("system/12345678@localhost:1521/xepdb1")
         cur = conn.cursor()
